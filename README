@@ -1,0 +1,10 @@
+js-compressor is a python program to compress and combine js files.
+
+How to use it:
+	run the js-compressor.js like this
+	python js-compressor.py done.js http://xxx.com/12.js;http://aa.com/13.js
+ OR python js-compressor.py done.js http://xxx.com/22.js
+ 
+    the done.js is the filename which store the data after compress and combine.
+	The first style will compress and combine the two javascript files
+	The second style will compress the only file.
