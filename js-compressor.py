@@ -9,7 +9,7 @@ import httplib, urllib, sys, os
 def compressor():
     ''' compressor and combine the javascript files. This script use the google closure REST API '''
     code_urls = [('code_url',v) for v in sys.argv[2].split(";")]
-    code_urls.extend([('compilation_level', 'WHITESPACE_ONLY'),('output_format', 'text'),('output_info', 'compiled_code'),])
+    code_urls.extend([('compilation_level', 'SIMPLE_OPTIMIZATIONS'),('output_format', 'text'),('output_info', 'compiled_code'),])
 
     params = urllib.urlencode(code_urls)
 
