@@ -23,6 +23,7 @@ def compressor():
     conn.close
     donejs = open(sys.argv[1],'w')
     donejs.write(data)
+    donejs.close()
 
 if(sys.argv.__len__() == 3):
     compressor()
