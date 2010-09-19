@@ -9,11 +9,11 @@ How to use it:
 	The first style will compress and combine the two javascript files
 	The second style just compress the single file.
 	
-Ê¹ÓÃ·½·¨£º
-	ÔÚÖ§³Öpyton  µÄ»úÆ÷ÉÏÒÔÏÂÁĞ·½Ê½ÔËĞĞ´Ë³ÌĞò£º
+ä½¿ç”¨æ–¹æ³•ï¼š
+	åœ¨æ”¯æŒpyton  çš„æœºå™¨ä¸Šä»¥ä¸‹åˆ—æ–¹å¼è¿è¡Œæ­¤ç¨‹åºï¼š
 	python js-compressor.py done.js http://xxx.com/12.js;http://aa.com/13.js
- »òÕß python js-compressor.py done.js http://xxx.com/22.js
+ æˆ–è€… python js-compressor.py done.js http://xxx.com/22.js
 	
-	ÃüÁîÖĞµÄ done.js ÊÇÑ¹ËõºóµÄÎÄ¼şÃû£¬¿ÉÒÔ×Ô¼ºÃüÃû¡£
-	µÚÒ»ÖÖ·½Ê½£¬»áÑ¹Ëõ²¢ÇÒºÏ²¢ÕâÁ½¸öÎÄ¼ş
-	µÚ¶şÖÖ·½Ê½£¬½ö½ö»áÑ¹Ëõ½öÓĞµÄÄÇ¸öÎÄ¼ş
+	å‘½ä»¤ä¸­çš„ done.js æ˜¯å‹ç¼©åçš„æ–‡ä»¶åï¼Œå¯ä»¥è‡ªå·±å‘½åã€‚
+	ç¬¬ä¸€ç§æ–¹å¼ï¼Œä¼šå‹ç¼©å¹¶ä¸”åˆå¹¶è¿™ä¸¤ä¸ªæ–‡ä»¶
+	ç¬¬äºŒç§æ–¹å¼ï¼Œä¼šå‹ç¼©ä»…æœ‰
