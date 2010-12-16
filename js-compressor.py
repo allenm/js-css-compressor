@@ -1,4 +1,9 @@
 #!/usr/bin/python2.6
+# @author: allenm, oldj
+#
+# @link: https://github.com/allenm/js-css-compressor
+# @link: https://github.com/oldj/js-css-compressor
+#
 
 import httplib
 import urllib
