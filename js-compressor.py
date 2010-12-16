@@ -9,10 +9,10 @@ import os
 # a URL-safe format.
 
 
-def compressor():
+def compressor(savename, filenames):
     ''' compressor and combine the javascript files. This script use the google closure REST API '''
 
-    filenames = (v.strip() for v in sys.argv[2].split(";"))
+    filenames = (v.strip() for v in filenames.split(";"))
     code = []
     for fn in filenames:
         if fn.startswith('http://'):
@@ -44,19 +44,18 @@ def compressor():
     print data.rstrip()
     conn.close()
 
-    outfilename = sys.argv[1]
-    donefile = open(sys.argv[1], 'w')
+    donefile = open(savename, 'w')
     donefile.write(data)
     donefile.close()
 
     print '-' * 50
-    print '>> outfile: %s' % outfilename
+    print '>> out: %s (%.2fK)' % (savename, len(data) / 1024.0)
 
 
 if __name__ == "__main__":
 
     if sys.argv.__len__() >= 3:
-        compressor()
+        compressor(sys.argv[1], sys.argv[2])
     else:
         print '''This script must contain at least two parameters.
 The first one is the filename which you want store the data after compress,
