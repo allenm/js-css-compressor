@@ -34,11 +34,11 @@ def compressor():
     donejs.close()
 
 if __name__ == "__main__":
-    if sys.argv.__len__() == 3:
+    if sys.argv.__len__() >= 3:
         compressor()
     else:
-        print '''This script must have two parameters.
-The first is the filename which you want store the data after compress.
-The second is the urls of javascript file which you want compress,
-if you have more than one javascript file want to compress,
+        print '''This script must contain at least two parameters.
+The first one is the filename which you want store the data after compress,
+the second is the urls or filenames of javascript file which you want compress,
+if you have more than one file to compress,
 use ";" to partition them.'''
