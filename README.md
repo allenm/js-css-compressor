@@ -24,3 +24,8 @@ OR
  - 命令中的 done.js 是压缩后的文件名，可以自己命名。
  - 第一种方式，会压缩并且合并这两个文件。
  - 第二种方式，只会压缩一个文件。
+
+
+说明：
+----------
+这个压缩工具使用的是 [closure compiler](http://closure-compiler.appspot.com/) 提供的服务。
