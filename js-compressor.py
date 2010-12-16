@@ -3,7 +3,7 @@
 import httplib
 import urllib
 import sys
-#import os
+import os
 
 # Define the parameters for the POST request and encode them in
 # a URL-safe format.
@@ -12,14 +12,26 @@ import sys
 def compressor():
     ''' compressor and combine the javascript files. This script use the google closure REST API '''
 
-    code_urls = [('code_url', v) for v in sys.argv[2].split(";")]
-    code_urls.extend([
+    filenames = (v.strip() for v in sys.argv[2].split(";"))
+    code = []
+    for fn in filenames:
+        if fn.startswith('http://'):
+            # url
+            code.append(('code_url', fn))
+        else:
+            # local file
+            if not os.path.isfile(fn):
+                print 'ERROR: "%s" is not a valid file!' % fn
+                return False
+            code.append(('js_code', open(fn).read()))
+
+    code.extend([
             ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
             ('output_format', 'text'),
             ('output_info', 'compiled_code'),
         ])
 
-    params = urllib.urlencode(code_urls)
+    params = urllib.urlencode(code)
 
     # Always use the following value for the Content-type header.
     headers = {'Content-type': 'application/x-www-form-urlencoded'}
@@ -27,13 +39,22 @@ def compressor():
     conn.request('POST', '/compile', params, headers)
     response = conn.getresponse()
     data = response.read()
-    print data
+    print 'DATA:'
+    print '-' * 50
+    print data.rstrip()
     conn.close()
-    donejs = open(sys.argv[1], 'w')
-    donejs.write(data)
-    donejs.close()
+
+    outfilename = sys.argv[1]
+    donefile = open(sys.argv[1], 'w')
+    donefile.write(data)
+    donefile.close()
+
+    print '-' * 50
+    print '>> outfile: %s' % outfilename
+
 
 if __name__ == "__main__":
+
     if sys.argv.__len__() >= 3:
         compressor()
     else:

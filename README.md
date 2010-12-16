@@ -4,10 +4,14 @@ js-css-compressor is a python program to compress and combine js/css files.
 
 How to use it:
 ----------
-run the js-compressor.py like this
+run the js-compressor.py like this:
     python js-compressor.py done.js http://xxx.com/12.js;http://aa.com/13.js
 OR
     python js-compressor.py done.js http://xxx.com/22.js
+OR
+    python js-compressor.py done.js localfile.js;localfile2.js
+OR
+    python js-compressor.py done.js localfile.js
 
  - the done.js is the filename which store the data after compress and combine.
  - The first style will compress and combine the two javascript files
@@ -16,10 +20,14 @@ OR
 
 使用方法：
 ----------
-在支持pyton  的机器上以下列方式运行此程序：
+在支持 pyton  的机器上以下列方式运行此程序：
     python js-compressor.py done.js http://xxx.com/12.js;http://aa.com/13.js
-或者
+或
     python js-compressor.py done.js http://xxx.com/22.js
+或
+    python js-compressor.py done.js localfile.js;localfile2.js
+或
+    python js-compressor.py done.js localfile.js
 
  - 命令中的 done.js 是压缩后的文件名，可以自己命名。
  - 第一种方式，会压缩并且合并这两个文件。
