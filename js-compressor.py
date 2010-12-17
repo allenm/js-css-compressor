@@ -2,7 +2,6 @@
 # @author: allenm, oldj
 #
 # @link: https://github.com/allenm/js-css-compressor
-# @link: https://github.com/oldj/js-css-compressor
 #
 
 import httplib
@@ -54,7 +53,7 @@ def compressor(savename, filenames):
     donefile.close()
 
     print '-' * 50
-    print '>> out: %s (%.2fK)' % (savename, len(data) / 1024.0)
+    print '>> output: %s (%.2fK)' % (savename, len(data) / 1024.0)
 
 
 if __name__ == "__main__":
