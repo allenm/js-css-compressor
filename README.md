@@ -16,7 +16,9 @@ OR
  - the done.js is the filename which store the data after compress and combine.
  - The first style will compress and combine the two javascript files
  - The second style just compress the single file.
+
 -----------
+
 The ali-compressor.py script just for the china alibaba's guys, so just explain it with chinese.
 
 
