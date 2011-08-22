@@ -67,6 +67,7 @@ def findLocalFile(url,filename):
         return False
 
 def replaceToMinFile(lineList,mergeFile):
+    ''' replace the filename to the -min file in the merge file automatically'''
     f = open(mergeFile)
     content = f.read()
     f.close
@@ -84,9 +85,11 @@ def replaceToMinFile(lineList,mergeFile):
     print '-'*20+'new merge file end'+'-'*20
 
 def repl2Min(matchobj):
+    ''' append '-min' to the filename '''
     return matchobj.group(1)+'-min'
 
 def compressSingleFile(filename):
+    ''' compress single file and display the result '''
     if not os.path.isfile(filename):
         print 'Error: "%s" is not a valid file!' % filename
         return False
