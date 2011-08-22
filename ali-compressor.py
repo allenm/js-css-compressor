@@ -31,11 +31,15 @@ def analyFile(filename):
 def compressMergeFile(filename):
     ''' analy the merge file, compress the file which inclube by the merge file and the filename have not the 'min' keyword'''
     f = open(filename)
+    shouldCompress = []
     while True:
         line = f.readline()
         if not line: break
-        handleMergeLine(line,filename)
+        if handleMergeLine(line,filename):
+            shouldCompress.append(line)
     f.close
+    if len(shouldCompress) > 0 :
+        replaceToMinFile(shouldCompress,filename)
 
 def handleMergeLine(line,filename):
     ''' analy one line of merge file, if It's a effective import line , then judge the file should be compress or not! '''
@@ -44,10 +48,10 @@ def handleMergeLine(line,filename):
     if m:
         localFile = findLocalFile(m.group(1),filename)
         if localFile:
-            showCompress = raw_input('('+m.group(1)+') Is this file should be compress? (y/n)')
+            showCompress = raw_input('('+m.group(1)+') Is this file should be compressed? (y/n)')
             if showCompress is 'y':
                 compressSingleFile(localFile)
-
+                return True
 
 
 def findLocalFile(url,filename):
@@ -62,6 +66,25 @@ def findLocalFile(url,filename):
         print "find local file failure, check you style directory , is it a common style of alicn structure"
         return False
 
+def replaceToMinFile(lineList,mergeFile):
+    f = open(mergeFile)
+    content = f.read()
+    f.close
+    for v in lineList:
+        #print v
+        p = re.compile('ImportJavscript\.url\([\'\"]http://style.china.alibaba.com/js/(.*)\.js[\'\"]\)')
+        m = p.search(v)
+        linep = re.compile('('+m.group(1)+')')
+        content = re.sub(linep,repl2Min,content)
+    print '-'*20+'new merge file'+'-'*20
+    f = open(mergeFile,'w')
+    f.write(content)
+    print content
+    f.close
+    print '-'*20+'new merge file end'+'-'*20
+
+def repl2Min(matchobj):
+    return matchobj.group(1)+'-min'
 
 def compressSingleFile(filename):
     if not os.path.isfile(filename):
