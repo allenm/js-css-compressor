@@ -44,7 +44,7 @@ def analyMergeFile(filename):
 
 def handleMergeLine(line,filename):
     ''' analy one line of merge file, if It's a effective import line , then judge the file should be compress or not! '''
-    p = re.compile('ImportJavscript\.url\([\'\"]http://style.china.alibaba.com/js/(.*[^(?:min)]\.js)[\'\"]\)')
+    p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*[^(?:min)]\.js)[\'\"]\)')
     m = p.search(line)
     if m:
         localFile = findLocalFile(m.group(1),filename)
@@ -58,7 +58,7 @@ def compressFiles( fileList, mergeFile ):
 
     print '*'*10+' compressing , please wait a few seconds '+'*'*10
 
-    p = re.compile('ImportJavscript\.url\([\'\"]http://style.china.alibaba.com/js/(.*[^(?:min)]\.js)[\'\"]\)')
+    p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*[^(?:min)]\.js)[\'\"]\)')
     for v in fileList:
         m = p.search(v)
         localFile = findLocalFile(m.group(1),mergeFile)
@@ -84,7 +84,7 @@ def replaceToMinFile(lineList,mergeFile):
     f.close
     for v in lineList:
         #print v
-        p = re.compile('ImportJavscript\.url\([\'\"]http://style.china.alibaba.com/js/(.*)\.js[\'\"]\)')
+        p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*)\.js[\'\"]\)')
         m = p.search(v)
         linep = re.compile('('+m.group(1)+')')
         content = re.sub(linep,repl2Min,content)
