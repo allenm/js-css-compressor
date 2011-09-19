@@ -22,13 +22,13 @@ def analyFile(filename):
     p = re.compile('ImportJavscript\.url')
     content = open(filename).read()
     if p.search(content):
-        compressMergeFile(filename)
+        analyMergeFile(filename)
     else:
         compressSingleFile(filename)
 
     
 
-def compressMergeFile(filename):
+def analyMergeFile(filename):
     ''' analy the merge file, compress the file which inclube by the merge file and the filename have not the 'min' keyword'''
     f = open(filename)
     shouldCompress = []
@@ -39,6 +39,7 @@ def compressMergeFile(filename):
             shouldCompress.append(line)
     f.close
     if len(shouldCompress) > 0 :
+        compressFiles(shouldCompress ,filename)
         replaceToMinFile(shouldCompress,filename)
 
 def handleMergeLine(line,filename):
@@ -50,8 +51,18 @@ def handleMergeLine(line,filename):
         if localFile:
             showCompress = raw_input('('+m.group(1)+') Is this file should be compressed? (y/n)')
             if showCompress is 'y':
-                compressSingleFile(localFile)
                 return True
+
+def compressFiles( fileList, mergeFile ):
+    ''' compress the file one by one according to the file list, find the local file associate with the merge file '''
+
+    print '*'*10+' compressing , please wait a few seconds '+'*'*10
+
+    p = re.compile('ImportJavscript\.url\([\'\"]http://style.china.alibaba.com/js/(.*[^(?:min)]\.js)[\'\"]\)')
+    for v in fileList:
+        m = p.search(v)
+        localFile = findLocalFile(m.group(1),mergeFile)
+        compressSingleFile(localFile)
 
 
 def findLocalFile(url,filename):
