@@ -61,7 +61,10 @@ class CompressJs:
     def findLocalFile(self,url):
         ''' find local file by the url and the origin filename '''
         absPath = os.path.abspath(self.uInput)
-        p = re.compile('^(.*/js/).*')
+        sep = os.sep
+        if sep == '\\': # for windows
+            sep = '\\\\' # for regexp
+        p = re.compile('^(.*'+sep+'js'+sep+').*')
         m = p.search(absPath)
         if m:
             localFile = m.group(1)+os.sep.join(url.split('/'))
@@ -172,3 +175,5 @@ if __name__ == "__main__":
         print '''This script must contain at least one parameter.
         the first parameter is the the script filename which you want compress
         '''
+    if sys.platform == 'win32': # for the exe
+        raw_input('press enter to exit')
