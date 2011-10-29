@@ -10,150 +10,164 @@ import sys
 import os
 import re
 
+class CompressJs:
+    """ compress single js file, or supply a js merge file ,then find the files which should be compress , compress one by one , and 
+    replace the filename in merge file to the compressed filename """
 
-def analyFile(filename):
-    ''' analy the file content , judge use which kind compressor.
-    if the file has 'ImportJavscirpt.url' keyword ,use the compress merge file method, else use compress single file method'''
+    def __init__(self, uInput):
+        self.uInput = uInput
+        if self.isMergeFile():
+            self.handleMergeFile()
+        else:
+            self.compressSingleFile(self.uInput)
 
-    if not os.path.isfile(filename):
-        print 'Error: "%s" is not a valid file!' % filename
-        return False
+    def isMergeFile(self):
+        ''' judge the user input is a merge file or not , the judge rule is find the "ImportJavscript.url" keyword '''
+        if not os.path.isfile(self.uInput):
+            print 'Error: "%s" is not a valid file!' % self.uInput 
+            raise Exception(' the file you input is not a valid file')
+
+        p = re.compile('ImportJavscript\.url')
+        content = open(self.uInput).read()
+        if p.search(content):
+            return True
+        else:
+            return False
+
+    def handleMergeFile(self):
+        ''' analy the merge file, compress the file which inclube by the merge file and the filename have not the 'min' keyword'''
+
+        p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*(?<!(?:min))+\.js)[\'\"]\)')
+        f = open(self.uInput)
+        shouldCompress = []
+        lineNos = []
+        lineNo = 0
+        for line in f.readlines():
+            m = p.search(line)
+            if m :
+                filepath = self.findLocalFile(m.group(1))
+                needCompress = raw_input('('+m.group(1)+') Is this file should be compressed? (y/n)')
+                if needCompress is 'y' or needCompress is 'Y' :
+                    shouldCompress.append(filepath)
+                    lineNos.append(lineNo)
+            lineNo += 1
         
-    p = re.compile('ImportJavscript\.url')
-    content = open(filename).read()
-    if p.search(content):
-        analyMergeFile(filename)
-    else:
-        compressSingleFile(filename)
+        self.shouldCompress = shouldCompress
+        self.lineNos = lineNos
+        self.compress1by1()
+        self.modifyMergeFile()
+
+
+    def findLocalFile(self,url):
+        ''' find local file by the url and the origin filename '''
+        absPath = os.path.abspath(self.uInput)
+        p = re.compile('^(.*/js/).*')
+        m = p.search(absPath)
+        if m:
+            localFile = m.group(1)+os.sep.join(url.split('/'))
+            return localFile
+        else:
+            print "find local file failure, check your style directory , is it a common style of alicn structure"
+            raise Exception('find local file failure ,please check your style directory')
+
+    def compress1by1(self):
+        ''' comprss the file in self.shouldCompress one by one'''
+        if len(self.shouldCompress) is 0:
+            return False
+
+        print '*'*10+' compressing , please wait a few seconds '+'*'*10
+        for v in self.shouldCompress:
+            self.compressSingleFile(v)
+
+    def modifyMergeFile(self):
+        ''' modify the merge file , replace the filename to the compressed file '''
+        if len(self.lineNos) is 0:
+            return False
+
+        tmp = ''
+        f = open(self.uInput)
+        lineNo = 0
+        shouldModifyNos = self.lineNos
+        nearestNo = shouldModifyNos.pop(0)
+        for line in f.readlines():
+            if lineNo is nearestNo:
+                tmp += line.replace('.js','-min.js')
+                if len(shouldModifyNos) is 0:
+                    nearestNo = -1
+                else:
+                    nearestNo = shouldModifyNos.pop(0)
+            else:
+                tmp += line
+            lineNo += 1
+        f.close()
+        print '*'*10 + ' The new merge File is: '+ '*'*10
+        print tmp
+        print '*'*10 +' compress success , please check '+ '*'*10
+
+        modified = open(self.uInput,'w')
+        modified.write(tmp)
+        modified.close()
+
+
+
+
 
     
+    def compressSingleFile(self,filepath):
+        ''' compress single file and display the result '''
+        if not os.path.isfile(filepath):
+            print 'Error: "%s" is not a valid file!' % filename
+            raise Exception('read file failure')
 
-def analyMergeFile(filename):
-    ''' analy the merge file, compress the file which inclube by the merge file and the filename have not the 'min' keyword'''
-    f = open(filename)
-    shouldCompress = []
-    while True:
-        line = f.readline()
-        if not line: break
-        if handleMergeLine(line,filename):
-            shouldCompress.append(line)
-    f.close
-    if len(shouldCompress) > 0 :
-        compressFiles(shouldCompress ,filename)
-        replaceToMinFile(shouldCompress,filename)
+        content = unicode(open(filepath).read(),'gbk').encode('utf8')
 
-def handleMergeLine(line,filename):
-    ''' analy one line of merge file, if It's a effective import line , then judge the file should be compress or not! '''
-    p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*[^(?:min)]\.js)[\'\"]\)')
-    m = p.search(line)
-    if m:
-        localFile = findLocalFile(m.group(1),filename)
-        if localFile:
-            showCompress = raw_input('('+m.group(1)+') Is this file should be compressed? (y/n)')
-            if showCompress is 'y':
-                return True
+        output = self.compressor(content)
 
-def compressFiles( fileList, mergeFile ):
-    ''' compress the file one by one according to the file list, find the local file associate with the merge file '''
+        savename = filepath.replace('.js','-min.js')
 
-    print '*'*10+' compressing , please wait a few seconds '+'*'*10
-
-    p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*[^(?:min)]\.js)[\'\"]\)')
-    for v in fileList:
-        m = p.search(v)
-        localFile = findLocalFile(m.group(1),mergeFile)
-        compressSingleFile(localFile)
+        # print info
+        print 'DATA:'
+        print '-' * 50
+        print output.rstrip()
+        print '-' * 50
+        print '>> output: %s (%.2fK)' % (savename, len(output) / 1024.0)
 
 
-def findLocalFile(url,filename):
-    ''' find local file by the url and the origin filename '''
-    absPath = os.path.abspath(filename)
-    p = re.compile('^(.*/js/).*')
-    m = p.search(absPath)
-    if m:
-        localFile = m.group(1)+os.sep.join(url.split('/'))
-        return localFile
-    else:
-        print "find local file failure, check you style directory , is it a common style of alicn structure"
-        return False
-
-def replaceToMinFile(lineList,mergeFile):
-    ''' replace the filename to the -min file in the merge file automatically'''
-    f = open(mergeFile)
-    content = f.read()
-    f.close
-    for v in lineList:
-        #print v
-        p = re.compile('ImportJavscript\.url\([\'\"]http://.*/js/(.*)\.js[\'\"]\)')
-        m = p.search(v)
-        linep = re.compile('('+m.group(1)+')')
-        content = re.sub(linep,repl2Min,content)
-    print '-'*20+'new merge file'+'-'*20
-    f = open(mergeFile,'w')
-    f.write(content)
-    print content
-    f.close
-    print '-'*20+'new merge file end'+'-'*20
-
-def repl2Min(matchobj):
-    ''' append '-min' to the filename '''
-    return matchobj.group(1)+'-min'
-
-def compressSingleFile(filename):
-    ''' compress single file and display the result '''
-    if not os.path.isfile(filename):
-        print 'Error: "%s" is not a valid file!' % filename
-        return False
-
-    content = unicode(open(filename).read(),'gbk').encode('utf8')
-
-    output = compressor(content)
-
-    savename = filename.replace('.js','-min.js')
-
-    # print info
-    print 'DATA:'
-    print '-' * 50
-    print output.rstrip()
-    print '-' * 50
-    print '>> output: %s (%.2fK)' % (savename, len(output) / 1024.0)
+        donefile = open(savename, 'w')
+        donefile.write(output)
+        donefile.close()
 
 
-    donefile = open(savename, 'w')
-    donefile.write(output)
-    donefile.close()
-
-
-# Define the parameters for the POST request and encode them in
-# a URL-safe format.
-def compressor(jscode):
-    ''' compressor the javascript code use the google closure REST API '''
-
-    code = [
-            ('js_code',jscode),
-            ('compilation_level', 'WHITESPACE_ONLY'),
-            ('output_format', 'text'),
-            ('output_info', 'compiled_code'),
-        ]
-
-    params = urllib.urlencode(code)
-
-    # Always use the following value for the Content-type header.
-    headers = {'Content-type': 'application/x-www-form-urlencoded'}
-    conn = httplib.HTTPConnection('api.allenm.me')
-    conn.request('POST', '/closure/compile', params, headers)
-    response = conn.getresponse()
-    #data = unicode(response.read()).encode('gbk')
-    data = response.read()
-    conn.close()
-
-    return data
-
+    # Define the parameters for the POST request and encode them in
+    # a URL-safe format.
+    def compressor(self,jscode):
+        ''' compressor the javascript code use the google closure REST API '''
+    
+        code = [
+                ('js_code',jscode),
+                ('compilation_level', 'WHITESPACE_ONLY'),
+                ('output_format', 'text'),
+                ('output_info', 'compiled_code'),
+            ]
+    
+        params = urllib.urlencode(code)
+    
+        # Always use the following value for the Content-type header.
+        headers = {'Content-type': 'application/x-www-form-urlencoded'}
+        conn = httplib.HTTPConnection('api.allenm.me')
+        conn.request('POST', '/closure/compile', params, headers)
+        response = conn.getresponse()
+        #data = unicode(response.read()).encode('gbk')
+        data = response.read()
+        conn.close()
+    
+        return data
 
 if __name__ == "__main__":
 
     if sys.argv.__len__() >= 2:
-        analyFile(sys.argv[1])
+        #analyFile(sys.argv[1])
+        CompressJs(sys.argv[1])
     else:
         print '''This script must contain at least one parameter.
         the first parameter is the the script filename which you want compress
