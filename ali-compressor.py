@@ -1,4 +1,4 @@
-#!/usr/bin/python2.6
+#!/usr/bin/env python
 # @author: allenm, oldj
 #
 # @link: https://github.com/allenm/js-css-compressor
